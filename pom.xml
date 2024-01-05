@@ -19,7 +19,9 @@
   
   <modules>
     <module>utilities</module>
+    <module>computer</module>
     <module>day1</module>
+    <module>day2</module>
   </modules>
 
   <dependencyManagement>
@@ -27,6 +29,11 @@
 		 <dependency>
 			<groupId>com.ben.aoc2019</groupId>
 			<artifactId>utilities</artifactId>
+			<version>1.0</version>
+		</dependency>
+		 <dependency>
+			<groupId>com.ben.aoc2019</groupId>
+			<artifactId>computer</artifactId>
 			<version>1.0</version>
 		</dependency>
 	    <dependency>
