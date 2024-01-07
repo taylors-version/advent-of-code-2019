@@ -20,7 +20,7 @@ public class Day2 {
 		
 		Computer computer = new Computer(input);
 		
-		return Long.parseLong(computer.intCode()[0]);
+		return computer.intCode().get(0);
 	}
 	
 	public long puzzle2() {
@@ -32,7 +32,7 @@ public class Day2 {
 				input[2] = Integer.toString(verb);
 				
 				Computer computer = new Computer(input);
-				if(Integer.parseInt(computer.intCode()[0]) == 19690720) {
+				if(computer.intCode().get(0) == 19690720) {
 					return 100 * noun + verb;
 				}
 			}

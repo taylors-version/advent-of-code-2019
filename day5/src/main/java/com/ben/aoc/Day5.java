@@ -18,9 +18,9 @@ public class Day5 {
 		
 		Computer computer = new Computer(input);
 		
-		computer.intCode(1);
+		List<Integer> result = computer.intCode(1);
 		
-		return 0;
+		return result.get(result.size()-1);
 	}
 	
 	public long puzzle2() {
@@ -28,9 +28,9 @@ public class Day5 {
 		
 		Computer computer = new Computer(input);
 		
-		computer.intCode(5);
+		List<Integer> result = computer.intCode(5);
 		
-		return 0;
+		return result.get(result.size()-1);
 	}
 	
 }

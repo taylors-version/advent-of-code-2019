@@ -1,7 +1,10 @@
 package com.ben.aoc;
 
 import java.util.Map;
-import static java.util.Map.entry;  
+import static java.util.Map.entry;
+
+import java.util.ArrayList;
+import java.util.List;  
 
 public class Computer {
 	
@@ -23,13 +26,22 @@ public class Computer {
 		this.instructions = ints;
 	}
 	
-	public String[] intCode() {
+	public List<Integer> intCode() {
 		return intCode(0);
 	}
 	
-	public String[] intCode(int input) {
+	public List<Integer> intCode(int input) {
+		int[] inputs = new int[1];
+		inputs[0] = input;
+		return intCode(inputs);
+	}
+	
+	public List<Integer> intCode(int[] inputs) {
+		List<Integer> outputs = new ArrayList<Integer>();
+		
 		boolean found99 = false;
 		int instructionPointer = 0;
+		int inputPointer = 0;
 		
 		while(!found99) {
 			String instruction = instructions[instructionPointer];
@@ -51,11 +63,12 @@ public class Computer {
 				instructionPointer+= instructionParamCount.get(opCode) + 1;
 				break;
 			case 3:
-				store(instructionPointer, input);
+				store(instructionPointer, inputs[inputPointer]);
+				inputPointer++;
 				instructionPointer+= instructionParamCount.get(opCode) + 1;
 				break;
 			case 4:
-				output(instructionPointer, params);
+				outputs.add(output(instructionPointer, params));
 				instructionPointer+= instructionParamCount.get(opCode) + 1;
 				break;
 			case 5:
@@ -78,8 +91,10 @@ public class Computer {
 			}
 			
 		}
-		
-		return instructions;
+		if(outputs.isEmpty()) {
+			outputs.add(Integer.parseInt(instructions[0]));
+		}
+		return outputs;
 	}
 	
 	private void add(int position, String params) {
@@ -114,12 +129,12 @@ public class Computer {
 		instructions[storeLocation] = Integer.toString(input);
 	}
 	
-	private void output(int position, String params) {
+	private int output(int position, String params) {
 		int aValue = Integer.parseInt(instructions[position+1]);
 		
 		int out = params.charAt(0) == '1' ? aValue : Integer.parseInt(instructions[aValue]);
 		
-		System.out.println(Integer.toString(out));
+		return out;
 	}
 	
 	private int jumpIfTrue(int position, String params) {
