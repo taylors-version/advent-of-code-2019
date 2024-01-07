@@ -1,48 +1,180 @@
 package com.ben.aoc;
 
+import java.util.Map;
+import static java.util.Map.entry;  
+
 public class Computer {
 	
-	private int[] ints;
+	private static final Map<Integer, Integer> instructionParamCount = Map.ofEntries(
+			entry(1, 3), //Add
+			entry(2, 3), //multiply
+			entry(3, 1), //input
+			entry(4, 1), //output
+			entry(5, 2), //JifTrue
+			entry(6, 2), //JifFalse
+			entry(7, 3), //LessThan
+			entry(8, 3), //Equals
+			entry(99, 0) //terminate
+			);
 	
-	public Computer(int[] ints) {
-		this.ints = ints;
+	private String[] instructions;
+	
+	public Computer(String[] ints) {
+		this.instructions = ints;
 	}
 	
-	public int[] intCode() {
+	public String[] intCode() {
+		return intCode(0);
+	}
+	
+	public String[] intCode(int input) {
 		boolean found99 = false;
-		int intsructionPointer = 0;
+		int instructionPointer = 0;
 		
 		while(!found99) {
-			int opCode = ints[intsructionPointer];
+			String instruction = instructions[instructionPointer];
+			
+			//Ensure all opcodes are at least 2 digits long to start with
+			if(instruction.length() < 2) {
+				instruction = padLeftZeros(instruction, 2);
+			}
+			
+			int opCode = Integer.parseInt(instruction.substring(instruction.length() - 2));
+			String params  = padLeftZeros(instruction.substring(0, instruction.length() - 2), instructionParamCount.get(opCode));
 			switch (opCode) {
 			case 1:
-				add(intsructionPointer);
+				add(instructionPointer, params);
+				instructionPointer+= instructionParamCount.get(opCode) + 1;
 				break;
 			case 2:
-				multiply(intsructionPointer);
+				multiply(instructionPointer, params);
+				instructionPointer+= instructionParamCount.get(opCode) + 1;
+				break;
+			case 3:
+				store(instructionPointer, input);
+				instructionPointer+= instructionParamCount.get(opCode) + 1;
+				break;
+			case 4:
+				output(instructionPointer, params);
+				instructionPointer+= instructionParamCount.get(opCode) + 1;
+				break;
+			case 5:
+				instructionPointer = jumpIfTrue(instructionPointer, params);
+				break;
+			case 6:
+				instructionPointer = jumpIfFalse(instructionPointer, params);
+				break;
+			case 7:
+				lessThan(instructionPointer, params);
+				instructionPointer+= instructionParamCount.get(opCode) + 1;
+				break;
+			case 8:
+				equalsTo(instructionPointer, params);
+				instructionPointer+= instructionParamCount.get(opCode) + 1;
 				break;
 			case 99:
 				found99 = true;
 				break;
 			}
-			intsructionPointer+=4;
+			
 		}
 		
-		return ints;
+		return instructions;
 	}
 	
-	private void add(int position) {
-		int positionA = ints[position+1];
-		int positionB = ints[position+2];
-		int storeLocation = ints[position+3];
-		ints[storeLocation] = ints[positionA] + ints[positionB];
+	private void add(int position, String params) {
+		
+		int aValue = Integer.parseInt(instructions[position+1]);
+		int bValue = Integer.parseInt(instructions[position+2]);
+		int storeLocation = Integer.parseInt(instructions[position+3]);
+		
+		int a = params.charAt(2) == '1' ? aValue : Integer.parseInt(instructions[aValue]);
+		int b = params.charAt(1) == '1' ? bValue : Integer.parseInt(instructions[bValue]);
+		
+
+		int sum = a + b;
+		instructions[storeLocation] = Integer.toString(sum);
 	}
 	
-	private void multiply(int position) {
-		int positionA = ints[position+1];
-		int positionB = ints[position+2];
-		int storeLocation = ints[position+3];
-		ints[storeLocation] = ints[positionA] * ints[positionB];
+	private void multiply(int position, String params) {
+		int aValue = Integer.parseInt(instructions[position+1]);
+		int bValue = Integer.parseInt(instructions[position+2]);
+		int storeLocation = Integer.parseInt(instructions[position+3]);
+		
+		int a = params.charAt(2) == '1' ? aValue : Integer.parseInt(instructions[aValue]);
+		int b = params.charAt(1) == '1' ? bValue : Integer.parseInt(instructions[bValue]);
+		
+		int product = a * b;
+		instructions[storeLocation] = Integer.toString(product);
+	}
+	
+	private void store(int position, int input) {
+		int storeLocation = Integer.parseInt(instructions[position+1]);
+		
+		instructions[storeLocation] = Integer.toString(input);
+	}
+	
+	private void output(int position, String params) {
+		int aValue = Integer.parseInt(instructions[position+1]);
+		
+		int out = params.charAt(0) == '1' ? aValue : Integer.parseInt(instructions[aValue]);
+		
+		System.out.println(Integer.toString(out));
+	}
+	
+	private int jumpIfTrue(int position, String params) {
+		int testValue = Integer.parseInt(instructions[position+1]);
+		int bValue = Integer.parseInt(instructions[position+2]);
+		
+		int test = params.charAt(1) == '1' ? testValue : Integer.parseInt(instructions[testValue]);
+		int b = params.charAt(0) == '1' ? bValue : Integer.parseInt(instructions[bValue]);
+		
+		return test != 0 ? b : (position + instructionParamCount.get(5) + 1);
+	}
+	
+	private int jumpIfFalse(int position, String params) {
+		int testValue = Integer.parseInt(instructions[position+1]);
+		int bValue = Integer.parseInt(instructions[position+2]);
+		
+		int test = params.charAt(1) == '1' ? testValue : Integer.parseInt(instructions[testValue]);
+		int b = params.charAt(0) == '1' ? bValue : Integer.parseInt(instructions[bValue]);
+		
+		return test == 0 ? b : (position + instructionParamCount.get(6) + 1);
+	}
+	
+	private void lessThan(int position, String params) {
+		int aValue = Integer.parseInt(instructions[position+1]);
+		int bValue = Integer.parseInt(instructions[position+2]);
+		int storeLocation = Integer.parseInt(instructions[position+3]);
+		
+		int a = params.charAt(2) == '1' ? aValue : Integer.parseInt(instructions[aValue]);
+		int b = params.charAt(1) == '1' ? bValue : Integer.parseInt(instructions[bValue]);
+		
+		int storeValue = a < b ? 1 : 0;
+		
+		instructions[storeLocation] = Integer.toString(storeValue);
+	}
+	
+	private void equalsTo(int position, String params) {
+		int aValue = Integer.parseInt(instructions[position+1]);
+		int bValue = Integer.parseInt(instructions[position+2]);
+		int storeLocation = Integer.parseInt(instructions[position+3]);
+		
+		int a = params.charAt(2) == '1' ? aValue : Integer.parseInt(instructions[aValue]);
+		int b = params.charAt(1) == '1' ? bValue : Integer.parseInt(instructions[bValue]);
+		
+		int storeValue = a == b ? 1 : 0;
+		
+		instructions[storeLocation] = Integer.toString(storeValue);
+	}
+	
+	private String padLeftZeros(String inputString, int length) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+		    sb.append('0');
+		}
+
+		return sb.substring(inputString.length()) + inputString;
 	}
 	
 }
