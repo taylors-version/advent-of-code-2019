@@ -18,7 +18,6 @@
   </properties>
   
   <modules>
-    <module>utilities</module>
     <module>computer</module>
     <module>day1</module>
     <module>day2</module>
@@ -26,12 +25,13 @@
     <module>day4</module>
     <module>day5</module>
     <module>day6</module>
+    <module>day7</module>
   </modules>
 
   <dependencyManagement>
 	  <dependencies>
 		 <dependency>
-			<groupId>com.ben.aoc2019</groupId>
+			<groupId>com.ben.aoc</groupId>
 			<artifactId>utilities</artifactId>
 			<version>1.0</version>
 		</dependency>

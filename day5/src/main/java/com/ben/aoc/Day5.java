@@ -17,8 +17,9 @@ public class Day5 {
 		String[] input = Arrays.copyOf(instructions, instructions.length);
 		
 		Computer computer = new Computer(input);
+		computer.intCode(1);
 		
-		List<Integer> result = computer.intCode(1);
+		List<Integer> result = computer.getOutputs();
 		
 		return result.get(result.size()-1);
 	}
@@ -27,8 +28,9 @@ public class Day5 {
 		String[] input = Arrays.copyOf(instructions, instructions.length);
 		
 		Computer computer = new Computer(input);
+		computer.intCode(5);
 		
-		List<Integer> result = computer.intCode(5);
+		List<Integer> result = computer.getOutputs();
 		
 		return result.get(result.size()-1);
 	}

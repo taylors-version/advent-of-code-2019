@@ -21,27 +21,32 @@ public class Computer {
 			);
 	
 	private String[] instructions;
+	private int instructionPointer = 0;
+	private int inputPointer = 0;
+	private List<Integer> outputs;
 	
 	public Computer(String[] ints) {
 		this.instructions = ints;
+		outputs = new ArrayList<Integer>();
 	}
 	
-	public List<Integer> intCode() {
+	public List<Integer> getOutputs(){
+		return outputs;
+	}
+	
+	public boolean intCode() {
 		return intCode(0);
 	}
 	
-	public List<Integer> intCode(int input) {
-		int[] inputs = new int[1];
-		inputs[0] = input;
+	public boolean intCode(int input) {
+		List<Integer> inputs = new ArrayList<Integer>();
+		inputs.add(input);
 		return intCode(inputs);
 	}
 	
-	public List<Integer> intCode(int[] inputs) {
-		List<Integer> outputs = new ArrayList<Integer>();
+	public boolean intCode(List<Integer> inputs) {
 		
 		boolean found99 = false;
-		int instructionPointer = 0;
-		int inputPointer = 0;
 		
 		while(!found99) {
 			String instruction = instructions[instructionPointer];
@@ -63,7 +68,10 @@ public class Computer {
 				instructionPointer+= instructionParamCount.get(opCode) + 1;
 				break;
 			case 3:
-				store(instructionPointer, inputs[inputPointer]);
+				while(inputPointer >= inputs.size()) {
+					return false;
+				}
+				store(instructionPointer,inputs.get(inputPointer));
 				inputPointer++;
 				instructionPointer+= instructionParamCount.get(opCode) + 1;
 				break;
@@ -91,10 +99,7 @@ public class Computer {
 			}
 			
 		}
-		if(outputs.isEmpty()) {
-			outputs.add(Integer.parseInt(instructions[0]));
-		}
-		return outputs;
+		return true;
 	}
 	
 	private void add(int position, String params) {

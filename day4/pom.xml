@@ -21,7 +21,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-		<groupId>com.ben.aoc2019</groupId>
+		<groupId>com.ben.aoc</groupId>
 		<artifactId>utilities</artifactId>
 	</dependency>
   </dependencies>
