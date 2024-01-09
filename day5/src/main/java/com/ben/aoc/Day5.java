@@ -19,7 +19,7 @@ public class Day5 {
 		Computer computer = new Computer(input);
 		computer.intCode(1);
 		
-		List<Integer> result = computer.getOutputs();
+		List<Long> result = computer.getOutputs();
 		
 		return result.get(result.size()-1);
 	}
@@ -30,7 +30,7 @@ public class Day5 {
 		Computer computer = new Computer(input);
 		computer.intCode(5);
 		
-		List<Integer> result = computer.getOutputs();
+		List<Long> result = computer.getOutputs();
 		
 		return result.get(result.size()-1);
 	}
