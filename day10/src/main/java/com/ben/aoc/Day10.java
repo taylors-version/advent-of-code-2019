@@ -12,7 +12,6 @@ import org.apache.commons.numbers.complex.Complex;
 
 public class Day10 {
 	public Set<IntPoint> asteroids = new HashSet<IntPoint>();
-	private IntPoint station;
 	private List<AsteroidAngled> asteroidsFromStation;
 	
 	
@@ -49,7 +48,6 @@ public class Day10 {
 			}
 			if(others.size() > result) {
 				result = others.size();
-				station = point;
 				asteroidsFromStation = others;
 			}
 		}
