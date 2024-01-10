@@ -28,6 +28,7 @@
     <module>day7</module>
     <module>day8</module>
     <module>day9</module>
+    <module>day10</module>
   </modules>
 
   <dependencyManagement>
@@ -57,6 +58,11 @@
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
 			<version>1.5.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-numbers-complex</artifactId>
+		    <version>1.1</version>
 		</dependency>
 	  </dependencies>
   </dependencyManagement>
