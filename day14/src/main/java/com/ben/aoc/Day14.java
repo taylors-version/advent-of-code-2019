@@ -112,7 +112,6 @@ public class Day14 {
 			}
 			
 		}
-		
 
 		return result;
 	}
