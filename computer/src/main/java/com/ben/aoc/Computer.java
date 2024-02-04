@@ -196,7 +196,10 @@ public class Computer {
 				return posValue;
 			case '2':
 				posValue += relativePointer;
-				return posValue < instructions.length ? Long.parseLong(instructions[(int)posValue]) : 0;
+				if(posValue < instructions.length && instructions[(int)posValue] != "") {
+					return Long.parseLong(instructions[(int)posValue]);
+				}
+				return 0;
 			}
 		}else {
 			switch (param) {
