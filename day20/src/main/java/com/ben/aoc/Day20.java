@@ -13,8 +13,6 @@ import java.util.Set;
 import org.javatuples.Pair;
 
 import com.ben.aoc.dijkstra.Dijkstra;
-import com.ben.aoc.dijkstra.Graph;
-import com.ben.aoc.dijkstra.Node;
 
 
 public class Day20 {
@@ -31,9 +29,8 @@ public class Day20 {
 	int innerRightEdge = 0;
 	int outerRightEdge = 0;
 	
-	Map<IntPoint, String> warps = new HashMap<IntPoint, String>();
-	Graph graph = new Graph();
-	Map<String, Node> nodes = new HashMap<String, Node>();
+	Map<IntPoint, Warp> doors = new HashMap<IntPoint, Warp>();
+	static Map<String, Warp> warps = new HashMap<String, Warp>();
 	
 	
 	
@@ -75,35 +72,29 @@ public class Day20 {
 			}
 		}
 		findWarps();
+		
+		for(Entry<IntPoint, Warp> e : doors.entrySet()) {
+			findEdges(e.getKey(), e.getValue());
+		}
 	}
 
 	public long puzzle1() {
-
-		for(Entry<IntPoint, String> e : warps.entrySet()) {
-			
-			Node node = nodes.get(e.getValue());
-			if(!e.getValue().equals("ZZ")) {
-				findEdges(e.getKey(), node);
-			}
-			graph.addNode(node);
-		}
-		Node start = nodes.get("AA");
-		Graph g = Dijkstra.calculateShortestPath(graph, start);
-		for(Node n : g.getNodes()) {
-			if(n.getName().equals("ZZ")) {
-				return n.getDistance();
-			}
-		}
+		MazeState start = new MazeState("AA", 0, false);
+		MazeState finish = (MazeState) Dijkstra.calculateShortestPath(start);
 		
-		return 0;
+		return finish.getDistance();
 	}
 
 
 	public long puzzle2() {
-		return 0;
+		
+		MazeRecursiveState start = new MazeRecursiveState("AA", 0, 0, false);
+		MazeRecursiveState finish = (MazeRecursiveState) Dijkstra.calculateShortestPath(start);
+		
+		return finish.getDistance();
 	}
 	
-	private void findEdges(IntPoint start, Node node) {
+	private void findEdges(IntPoint start, Warp node) {
 		Queue<Pair<IntPoint, Integer>> queue = new ArrayDeque<Pair<IntPoint, Integer>>();
 		Set<IntPoint> visited = new HashSet<IntPoint>();
 		
@@ -115,10 +106,15 @@ public class Day20 {
 			IntPoint point = current.getValue0();
 			
 			if(isEdgePoint(point) && start!=point) {
-				String destName = warps.get(point);
-				Node destination = nodes.get(destName);
+				String destName = doors.get(point).getName();
+				if(isOuterPoint(point)) {
+					destName = destName + "o";
+				}else {
+					destName = destName + "i";
+				}
+				Warp destination = warps.get(destName);
 				int distance = current.getValue1();
-				if(!destName.equals("ZZ")) {
+				if(!destName.equals("ZZo")) {
 					distance++;
 				}
 				node.addDestination(destination, distance);
@@ -162,53 +158,54 @@ public class Day20 {
 				//check top edge
 				if(maze[outerUpEdge][i] == '.') {
 					String name = String.valueOf(maze[outerUpEdge-2][i]) + String.valueOf(maze[outerUpEdge-1][i]);
-					storeWarp(name, new IntPoint(i, outerUpEdge));
+					storeWarp(name, new IntPoint(i, outerUpEdge), false);
 				}
 				//check inner top
 				if(maze[innerUpEdge][i] == '.' && i > innerLeftEdge && i < innerRightEdge) {
 					String name = String.valueOf(maze[innerUpEdge+1][i]) + String.valueOf(maze[innerUpEdge+2][i]);
-					storeWarp(name, new IntPoint(i, innerUpEdge));
+					storeWarp(name, new IntPoint(i, innerUpEdge), true);
 				}
 				//check inner down
 				if(maze[innerDownEdge][i] == '.' && i > innerLeftEdge && i < innerRightEdge) {
 					String name = String.valueOf(maze[innerDownEdge-2][i]) + String.valueOf(maze[innerDownEdge-1][i]);
-					storeWarp(name, new IntPoint(i, innerDownEdge));
+					storeWarp(name, new IntPoint(i, innerDownEdge), true);
 				}
 				//check down edge
 				if(maze[outerDownEdge][i] == '.') {
 					String name = String.valueOf(maze[outerDownEdge+1][i]) + String.valueOf(maze[outerDownEdge+2][i]);
-					storeWarp(name, new IntPoint(i, outerDownEdge));
+					storeWarp(name, new IntPoint(i, outerDownEdge), false);
 				}
 			}
 			if(i<maze.length-2) {
 				//check left edge
 				if(maze[i][outerLeftEdge] == '.') {
 					String name = String.valueOf(maze[i][outerLeftEdge-2]) + String.valueOf(maze[i][outerLeftEdge-1]);
-					storeWarp(name, new IntPoint(outerLeftEdge, i));
+					storeWarp(name, new IntPoint(outerLeftEdge, i), false);
 				}
 				//check inner left edge
 				if(maze[i][innerLeftEdge] == '.' && i > innerUpEdge && i < innerDownEdge) {
 					String name = String.valueOf(maze[i][innerLeftEdge+1]) + String.valueOf(maze[i][innerLeftEdge+2]);
-					storeWarp(name, new IntPoint(innerLeftEdge, i));
+					storeWarp(name, new IntPoint(innerLeftEdge, i), true);
 				}
 				//check inner right edge
 				if(maze[i][innerRightEdge] == '.' && i > innerUpEdge && i < innerDownEdge) {
 					String name = String.valueOf(maze[i][innerRightEdge-2]) + String.valueOf(maze[i][innerRightEdge-1]);
-					storeWarp(name, new IntPoint(innerRightEdge, i));
+					storeWarp(name, new IntPoint(innerRightEdge, i), true);
 				}
 				//check right edge
 				if(maze[i][outerRightEdge] == '.') {
 					String name = String.valueOf(maze[i][outerRightEdge+1]) + String.valueOf(maze[i][outerRightEdge+2]);
-					storeWarp(name, new IntPoint(outerRightEdge, i));
+					storeWarp(name, new IntPoint(outerRightEdge, i), false);
 				}
 			}
 		}
 	}
 	
-	private void storeWarp(String name, IntPoint point) {
-		Node node = new Node(name);
-		nodes.put(name, node);
-		warps.put(point, name);
+	private void storeWarp(String name, IntPoint point, boolean isInner) {
+		Warp node = new Warp(name, isInner);
+		String newName = isInner ? name + "i" : name + "o";
+		warps.put(newName, node);
+		doors.put(point, node);
 		if(name.equals("AA")) {
 			startPos = point;
 		}
@@ -230,6 +227,24 @@ public class Day20 {
 	}
 	
 	private boolean isEdgePoint(IntPoint point) {
+		if(isOuterPoint(point)) {
+			return true;
+		}
+		
+		int x = point.getX();
+		int y = point.getY();
+
+		if((x > innerLeftEdge && x < innerRightEdge) && (y == innerUpEdge || y == innerDownEdge)) {
+			return true;
+		}
+		if((y > innerUpEdge && y < innerDownEdge) && (x == innerLeftEdge || x == innerRightEdge)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean isOuterPoint(IntPoint point) {
 		int x = point.getX();
 		int y = point.getY();
 		
@@ -237,12 +252,6 @@ public class Day20 {
 			return true;
 		}
 		if(x == outerLeftEdge || x == outerRightEdge) {
-			return true;
-		}
-		if((x > innerLeftEdge && x < innerRightEdge) && (y == innerUpEdge || y == innerDownEdge)) {
-			return true;
-		}
-		if((y > innerUpEdge && y < innerDownEdge) && (x == innerLeftEdge || x == innerRightEdge)) {
 			return true;
 		}
 		
