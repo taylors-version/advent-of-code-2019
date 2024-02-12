@@ -1,0 +1,57 @@
+A bowl of rice
+B monolith
+C mug
+D weather machine
+E fuel cell
+F astrolabe
+G ornament
+H hologram
+
+
+EFGH - just right
+
+== Security Checkpoint ==
+In the next room, a pressure-sensitive floor will verify your identity.
+
+Doors here lead:
+- north
+- east
+
+Items here:
+- bowl of rice
+- monolith
+- mug
+- weather machine
+- fuel cell
+
+
+== Pressure-Sensitive Floor ==
+Analyzing...
+
+Doors here lead:
+- south
+
+A loud, robotic voice says "Analysis complete! You may proceed." and you enter t
+he cockpit.
+Santa notices your small droid, looks puzzled for a moment, realizes what has ha
+ppened, and radios your ship directly.
+"Oh, hello! You should be able to get in by typing 1073874948 on the keypad at t
+he main airlock."
+
+== Pressure-Sensitive Floor ==
+Analyzing...
+
+Doors here lead:
+- south
+
+A loud, robotic voice says "Alert! Droids on this ship are heavier than the dete
+cted value!" and you are ejected back to the checkpoint.
+
+== Pressure-Sensitive Floor ==
+Analyzing...
+
+Doors here lead:
+- south
+
+A loud, robotic voice says "Alert! Droids on this ship are lighter than the dete
+cted value!" and you are ejected back to the checkpoint.

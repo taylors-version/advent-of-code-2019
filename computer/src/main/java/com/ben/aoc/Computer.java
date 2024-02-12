@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;  
 
-public class Computer {
+public class Computer implements Runnable {
 	
 	private static final Map<Integer, Integer> instructionParamCount = Map.ofEntries(
 			entry(1, 3), //Add
@@ -28,6 +28,8 @@ public class Computer {
 	private int inputPointer = 0;
 	private int relativePointer = 0;
 	private List<Long> outputs;
+	private List<Long> inputs;
+	boolean isFinished = false;
 	
 	public Computer(String[] ints) {
 		this.instructions = ints;
@@ -38,21 +40,22 @@ public class Computer {
 		return outputs;
 	}
 	
-	public boolean intCode() {
-		return intCode(0);
+	public void setInputs(List<Long> inputs) {
+		this.inputs = inputs;
 	}
 	
-	public boolean intCode(int input) {
-		List<Long> inputs = new ArrayList<Long>();
-		inputs.add((long)input);
-		return intCode(inputs);
-	}
-	
-	public boolean intCode(List<Long> inputs) {
+	@Override
+	public void run() {
 		
 		boolean found99 = false;
 		
 		while(!found99) {
+			//Check for interruption
+			if(Thread.interrupted()) {
+                return;
+            }
+			
+			
 			String instruction = instructions[instructionPointer];
 			
 			//Ensure all opcodes are at least 2 digits long to start with
@@ -74,7 +77,8 @@ public class Computer {
 				break;
 			case 3:
 				while(inputPointer >= inputs.size()) {
-					return false;
+					isFinished = false;
+					return;
 				}
 				store(instructionPointer,inputs.get(inputPointer), params);
 				inputPointer++;
@@ -108,7 +112,25 @@ public class Computer {
 			}
 			
 		}
-		return true;
+		isFinished = true;
+		return;
+		
+	}
+	
+	public boolean intCode() {
+		return intCode(0);
+	}
+	
+	public boolean intCode(int input) {
+		List<Long> inputs = new ArrayList<Long>();
+		inputs.add((long)input);
+		return intCode(inputs);
+	}
+	
+	public boolean intCode(List<Long> inputs) {
+		this.inputs = inputs;
+		run();
+		return isFinished;
 	}
 	
 	private void add(int position, String params) {
